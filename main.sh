@@ -14,7 +14,7 @@ echo "Loading contents from " $PWD"..."
 
 clear
 main() {
-    echo $PWD"┌─ Waiting for action"
+    echo "┌─ Waiting for action at" $PWD
     read -p "└─linfm> " lfm_ans
     case "$lfm_ans" in
       SetDir)
