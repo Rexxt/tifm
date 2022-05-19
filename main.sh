@@ -78,8 +78,8 @@ main() {
         main
       ;;
       CmdLine)
-        read linfm_cmd
-        /bin/sh -c "$linfm_cmd"
+        /bin/sh
+        main
       ;;
       Help)
         echo "
