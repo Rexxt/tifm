@@ -77,6 +77,10 @@ main() {
         chmod $lfm_setperm $lfm_setany
         main
       ;;
+      CmdLine)
+        read linfm_cmd
+        /bin/sh -c "$linfm_cmd"
+      ;;
       Help)
         echo "
         List of commands:
@@ -100,6 +104,8 @@ main() {
         -Creates new file
         PermSet
         -Sets permissions for a specific file or folder
+        CmdLine
+        -Switches to command line mode, run 'exit' to exit.
         Exit
         -That exits out of LinFM."
         main
