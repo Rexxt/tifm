@@ -1,17 +1,21 @@
 #!/bin/env bash
-
+clear
 echo "
-   
-%####
-#########
-@@@###@@# LinFM
-@@@@@@@@@ A file manager, in your command line.
+┌─────────────────────────────────────────────────┐
+│ %####                                           │
+│ #########                                       │
+│ @@@###@@# LinFM                                 │
+│ @@@@@@@@@ A file manager, in your command line. │
+│ Made with <3 by [I> (Icycoide)                  │
+└─────────────────────────────────────────────────┘ 
 "
+sleep 3
 echo "Loading contents from " $PWD"..."
 
+clear
 main() {
-    echo $PWD" - Waiting for action"
-    read lfm_ans
+    echo $PWD"┌─ Waiting for action"
+    read -p "└─linfm> " lfm_ans
     case "$lfm_ans" in
       SetDir)
         echo "Select a directory to go to."
@@ -101,6 +105,7 @@ main() {
         main
       ;;
       Exit)
+        clear
         exit
       ;;
       *)
