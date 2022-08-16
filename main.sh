@@ -137,28 +137,27 @@ main() {
 			/bin/bash
 		;;
 		"?")
-			echo "
-			List of commands:
-			N
-			- Goes to a folder
-			o
-			- Opens a file
-			m 
-			- Moves/Renames a file
-			c
-			- Copies a file to a location
-			i
-			- Shows the list of files inside the directory (with detail)
-			n
-			- Creates a folder or file
-			r
-			- Removes a folder or file
-			p
-			- Sets permissions for a specific file or folder
-			t
-			- Switches to command line mode, run 'exit' to exit.
-			Q
-			- Quits the program"
+			echo "List of commands:
+N
+- Goes to a folder
+o
+- Opens a file
+m 
+- Moves/Renames a file
+c
+- Copies a file to a location
+i
+- Shows the list of files inside the directory (with detail)
+n
+- Creates a folder or file
+r
+- Removes a folder or file
+p
+- Sets permissions for a specific file or folder
+t
+- Switches to command line mode, run 'exit' to exit.
+Q
+- Quits the program"
 		;;
 		Q)
 			clear
