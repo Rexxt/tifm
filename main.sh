@@ -20,14 +20,16 @@ init() {
 	SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 	# config
 	source "$SCRIPT_DIR/config.sh"
+	# vars
+	STATUS=0
 }
 
 main() {
-	echo "$CYAN╭ $BRIGHT$GREEN$PWD$NORMAL"
+	echo "$CYAN$__ANGLE_UP_RIGHT $BRIGHT$GREEN$PWD$NORMAL $STATUS"
 	while read file; do
-		echo "$CYAN│ $BLUE$file$NORMAL"
+		echo "$CYAN$__VBAR $BLUE$file$NORMAL"
 	done < <(ls -1)
-	read -n 1 -p "$CYAN╰ ${RED}tifm> $YELLOW" ans
+	read -n 1 -p "$CYAN$__ANGLE_DOWN_RIGHT ${RED}tifm> $YELLOW" ans
 	if [ "$ans" != "n" ] && [ "$ans" != "r" ]; then
 		echo ""
 	fi
@@ -199,15 +201,16 @@ Q      - Quits the program"
 			echo "Unrecognized command. Type '?' for a list of commands."
 		;;
 	esac
+	STATUS=$?
 	echo ""
 }
 
 (
 	clear
 	init
-	echo "$CYAN╭$NORMAL tifm $__TIFM_VERSION
-$CYAN│$NORMAL github.com/Rexxt/tifm
-$CYAN╰$NORMAL Strike '?' for help"
+	echo "$CYAN$__ANGLE_UP_RIGHT$NORMAL tifm $__TIFM_VERSION
+$CYAN$__VBAR$NORMAL github.com/Rexxt/tifm
+$CYAN$__ANGLE_DOWN_RIGHT$NORMAL Strike '?' for help"
 	echo ""
 	while true; do
 		main
