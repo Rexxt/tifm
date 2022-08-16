@@ -181,7 +181,7 @@ main() {
 N      - Goes to a folder
 o      - Opens a file
 p      - View file (uses 'less' by default - change in config.sh)
-e	   - edit a file (uses 'nano' by default - change in config.sh)
+e      - edit a file (uses 'nano' by default - change in config.sh)
 m      - Moves/Renames a file
 c      - Copies a file to a location
 i      - Shows the list of files inside the directory (with detail)
