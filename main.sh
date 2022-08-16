@@ -1,7 +1,7 @@
 #!/bin/env bash
 init() {
 	# consts
-	__TIFM_VERSION="0.1.0"
+	__TIFM_VERSION="0.1.1"
 	BLACK=$(tput setaf 0)
 	RED=$(tput setaf 1)
 	GREEN=$(tput setaf 2)
@@ -22,6 +22,27 @@ init() {
 	STATUS=0
 	# config
 	source "$SCRIPT_DIR/config.sh"
+	# load extensions
+	declare -A tifm_extensions_commands
+	tifm_extensions_longcommands=()
+	declare -A tifm_extensions_subcommands
+	tifmx.bind() {
+		tifm_extensions_commands["$1"]="$2"
+	}
+	tifmx.add_long() {
+		tifm_extensions_longcommands+=("$1")
+	}
+	tifmx.bind_sub() {
+		tifm_extensions_subcommands["$1$2"]="$3"
+	}
+	load_extensions
+}
+
+load_extensions() {
+	for extension in "$SCRIPT_DIR/extensions/"*; do
+		source "$extension"
+	done
+	echo "${tifm_extensions_commands[@]}, ${tifm_extensions_longcommands[@]}, ${tifm_extensions_subcommands[@]}"
 }
 
 main() {
@@ -30,7 +51,7 @@ main() {
 		echo "$__TIFM_DECO_COLOUR$__VBAR $__TIFM_LS_COLOUR$file$NORMAL"
 	done < <(ls -a)
 	read -n 1 -p "$__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT $(__TIFM_PROMPT) $YELLOW" ans
-	if [ "$ans" != "n" ] && [ "$ans" != "r" ]; then
+	if [ "$ans" != "n" ] && [ "$ans" != "r" ] && [ -z "${tifm_extensions_longcommands[$tifm_select]}" ]; then
 		echo ""
 	fi
 	printf "$NORMAL"
@@ -47,7 +68,7 @@ main() {
 		;;
 		o)
 			echo "Choose a file to open (/cancel)."
-			read -p "from:: " tifm_file
+			read -p "file:: " tifm_file
 			if [ "$tifm_file" == "/cancel" ]; then
 				echo "Cancelled."
 				return
@@ -57,7 +78,7 @@ main() {
 		;;
 		p)
 			echo "Choose a file to view (/cancel)."
-			read -p "from:: " tifm_file
+			read -p "file:: " tifm_file
 			if [ "$tifm_file" == "/cancel" ]; then
 				echo "Cancelled."
 				return
@@ -67,7 +88,7 @@ main() {
 		;;
 		e)
 			echo "Choose a file to edit (/cancel)."
-			read -p "from:: " tifm_file
+			read -p "file:: " tifm_file
 			if [ "$tifm_file" == "/cancel" ]; then
 				echo "Cancelled."
 				return
@@ -104,7 +125,14 @@ main() {
 			mv "$tifm_file_from" "$tifm_file_to"
 		;;
 		i)
-			ls -l -1
+			echo "Choose the directory to inspect (/cancel)."
+			read -p "dir:: " tifm_dir
+			if [ "$tifm_dir" == "/cancel" ]; then
+				echo "Cancelled."
+				return
+			else
+				ls -l $tifm_dir
+			fi
 		;;
 		n)
 			read -n 1 tifm_type
@@ -198,7 +226,19 @@ Q      - Quits the program"
 			exit
 		;;
 		*)
-			echo "Unrecognized command. Type '?' for a list of commands."
+			if [ ! -z "${tifm_extensions_commands[$tifm_select]}" ]; then
+				eval "${tifm_extensions_commands[$tifm_select]}"
+			elif [ ! -z "${tifm_extensions_longcommands[$tifm_select]}" ]; then
+				read -n 1 tifm_subcommand
+				echo ""
+				if [ ! -z "${tifm_extensions_subcommands[$tifm_select$tifm_subcommand]}" ]; then
+					eval "${tifm_extensions_subcommands[$tifm_select$tifm_subcommand]}"
+				else
+					echo "Invalid subcommand."
+				fi
+			else
+				echo "Unrecognized command. Type '?' for a list of commands."
+			fi
 		;;
 	esac
 	STATUS=$?

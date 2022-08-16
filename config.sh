@@ -17,5 +17,5 @@ __TIFM_DISPLAY() {
 }
 __TIFM_LS_COLOUR="$BLUE"
 __TIFM_PROMPT() {
-    echo "${CYAN}tifm>"
+    echo "$CYAN$USERNAME>"
 }
