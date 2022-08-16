@@ -199,6 +199,7 @@ Q      - Quits the program"
 			echo "Unrecognized command. Type '?' for a list of commands."
 		;;
 	esac
+	echo ""
 }
 
 (
