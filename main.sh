@@ -1,17 +1,37 @@
 #!/bin/env bash
-consts() {
+init() {
+	# consts
 	__TIFM_VERSION="0.1.0"
+	BLACK=$(tput setaf 0)
+	RED=$(tput setaf 1)
+	GREEN=$(tput setaf 2)
+	YELLOW=$(tput setaf 3)
+	LIME_YELLOW=$(tput setaf 190)
+	POWDER_BLUE=$(tput setaf 153)
+	BLUE=$(tput setaf 4)
+	MAGENTA=$(tput setaf 5)
+	CYAN=$(tput setaf 6)
+	WHITE=$(tput setaf 7)
+	BRIGHT=$(tput bold)
+	NORMAL=$(tput sgr0)
+	BLINK=$(tput blink)
+	REVERSE=$(tput smso)
+	UNDERLINE=$(tput smul)
+	SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+	# config
+	source "$SCRIPT_DIR/config.sh"
 }
 
 main() {
-	echo "╭ $PWD"
+	echo "$CYAN╭ $BRIGHT$GREEN$PWD$NORMAL"
 	while read file; do
-		echo "│ $file"
+		echo "$CYAN│ $BLUE$file$NORMAL"
 	done < <(ls -1)
-	read -n 1 -p "╰ tifm> " ans
+	read -n 1 -p "$CYAN╰ ${RED}tifm> $YELLOW" ans
 	if [ "$ans" != "n" ] && [ "$ans" != "r" ]; then
 		echo ""
 	fi
+	printf "$NORMAL"
 	case "$ans" in
 		N)
 			echo "Select a directory to go to (/cancel)."
@@ -31,6 +51,26 @@ main() {
 				return
 			else
 				xdg-open $tifm_file
+			fi
+		;;
+		p)
+			echo "Choose a file to view (/cancel)."
+			read -p "from:: " tifm_file
+			if [ "$tifm_file" == "/cancel" ]; then
+				echo "Cancelled."
+				return
+			else
+				$__TIFM_PAGER $tifm_file
+			fi
+		;;
+		e)
+			echo "Choose a file to edit (/cancel)."
+			read -p "from:: " tifm_file
+			if [ "$tifm_file" == "/cancel" ]; then
+				echo "Cancelled."
+				return
+			else
+				$__TIFM_EDITOR $tifm_file
 			fi
 		;;
 		c)
@@ -118,7 +158,7 @@ main() {
 				;;
 			esac
 		;;
-		p)
+		P)
 			echo "Choose a file or folder to change the permission (/cancel)."
 			read -p "item:: " tifm_select
 			if [ "$tifm_select" == "/cancel" ]; then
@@ -137,27 +177,19 @@ main() {
 			/bin/bash
 		;;
 		"?")
-			echo "List of commands:
-N
-- Goes to a folder
-o
-- Opens a file
-m 
-- Moves/Renames a file
-c
-- Copies a file to a location
-i
-- Shows the list of files inside the directory (with detail)
-n
-- Creates a folder or file
-r
-- Removes a folder or file
-p
-- Sets permissions for a specific file or folder
-t
-- Switches to command line mode, run 'exit' to exit.
-Q
-- Quits the program"
+			echo "${LIME_YELLOW}List of commands:$NORMAL
+N      - Goes to a folder
+o      - Opens a file
+p      - View file (uses 'less' by default - change in config.sh)
+e	   - edit a file (uses 'nano' by default - change in config.sh)
+m      - Moves/Renames a file
+c      - Copies a file to a location
+i      - Shows the list of files inside the directory (with detail)
+n(f/d) - Creates a folder or file
+r(f/d) - Removes a folder or file
+P      - Sets permissions for a specific file or folder
+t      - Switches to command line mode, run 'exit' to exit.
+Q      - Quits the program"
 		;;
 		Q)
 			clear
@@ -170,12 +202,12 @@ Q
 }
 
 (
-	consts
-	echo "╭ tifm $__TIFM_VERSION
-│ github.com/Rexxt/tifm
-╰ Strike '?' for help
-"
-	echo "Loading contents from $PWD..."
+	clear
+	init
+	echo "$CYAN╭$NORMAL tifm $__TIFM_VERSION
+$CYAN│$NORMAL github.com/Rexxt/tifm
+$CYAN╰$NORMAL Strike '?' for help"
+	echo ""
 	while true; do
 		main
 	done
