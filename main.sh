@@ -18,18 +18,18 @@ init() {
 	REVERSE=$(tput smso)
 	UNDERLINE=$(tput smul)
 	SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-	# config
-	source "$SCRIPT_DIR/config.sh"
 	# vars
 	STATUS=0
+	# config
+	source "$SCRIPT_DIR/config.sh"
 }
 
 main() {
-	echo "$CYAN$__ANGLE_UP_RIGHT $BRIGHT$GREEN$PWD$NORMAL $STATUS"
+	echo "$__TIFM_DECO_COLOUR$__ANGLE_UP_RIGHT $(__TIFM_DISPLAY)$NORMAL"
 	while read file; do
-		echo "$CYAN$__VBAR $BLUE$file$NORMAL"
-	done < <(ls -1)
-	read -n 1 -p "$CYAN$__ANGLE_DOWN_RIGHT ${RED}tifm> $YELLOW" ans
+		echo "$__TIFM_DECO_COLOUR$__VBAR $__TIFM_LS_COLOUR$file$NORMAL"
+	done < <(ls -a)
+	read -n 1 -p "$__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT $(__TIFM_PROMPT) $YELLOW" ans
 	if [ "$ans" != "n" ] && [ "$ans" != "r" ]; then
 		echo ""
 	fi
@@ -208,9 +208,9 @@ Q      - Quits the program"
 (
 	clear
 	init
-	echo "$CYAN$__ANGLE_UP_RIGHT$NORMAL tifm $__TIFM_VERSION
-$CYAN$__VBAR$NORMAL github.com/Rexxt/tifm
-$CYAN$__ANGLE_DOWN_RIGHT$NORMAL Strike '?' for help"
+	echo "$__TIFM_DECO_COLOUR$__ANGLE_UP_RIGHT$NORMAL tifm $__TIFM_VERSION
+$__TIFM_DECO_COLOUR$__VBAR$NORMAL github.com/Rexxt/tifm
+$__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT$NORMAL Strike '?' for help"
 	echo ""
 	while true; do
 		main
