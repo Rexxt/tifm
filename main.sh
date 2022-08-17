@@ -51,12 +51,17 @@ load_extensions() {
 	for extension in "$SCRIPT_DIR/extensions/"*; do
 		source "$extension"
 		# add only the name of the extension to the array (ex: extensions/git.sh -> git)
-		tifm_extensions+=("$(basename "$extension")")
+		local ext_name=$(basename "$extension" | cut -d. -f1)
+		tifm_extensions+=("$ext_name")
 		count=$((count + 1))
 		# percentage of completion
 		local percent=$((count / files * 100))
 		tput rc
 		printf "Loading extensions... $count/$files ($percent%%)\n"
+		# if function $ext_name.init exists, call it
+		if type "$ext_name".init &> /dev/null; then
+			"$ext_name".init
+		fi
 	done
 }
 
@@ -66,25 +71,33 @@ main() {
 		echo "$__TIFM_DECO_COLOUR$__VBAR $__TIFM_LS_COLOUR$file$NORMAL"
 	done < <(ls -a)
 	read -n 1 -p "$__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT $(__TIFM_PROMPT) $YELLOW" ans
+
 	if [[ "$ans" != "n" ]] && [[ "$ans" != "r" ]] && [[ ! "${tifm_extensions_longcommands[*]}" =~ "$ans" ]]; then
 		echo ""
 	fi
 	printf "$NORMAL"
+
 	case "$ans" in
 		N)
-			echo "Select a directory to go to (/cancel)."
+			echo "Select a directory to go to (/c(ancel))."
 			read -p "nav:: " tifm_dir
-			if [[ "$tifm_dir" == "/cancel" ]]; then
+			if [[ "$tifm_dir" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			else
 				cd $tifm_dir
+				# for ever extension, if it has a function called name.nav, call it
+				for ext_name in "${tifm_extensions[@]}"; do
+					if type "$ext_name".nav &> /dev/null; then
+						"$ext_name".nav
+					fi
+				done
 			fi
 		;;
 		o)
-			echo "Choose a file to open (/cancel)."
+			echo "Choose a file to open (/c(ancel))."
 			read -p "file:: " tifm_file
-			if [[ "$tifm_file" == "/cancel" ]]; then
+			if [[ "$tifm_file" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -92,9 +105,9 @@ main() {
 			fi
 		;;
 		p)
-			echo "Choose a file to view (/cancel)."
+			echo "Choose a file to view (/c(ancel))."
 			read -p "file:: " tifm_file
-			if [[ "$tifm_file" == "/cancel" ]]; then
+			if [[ "$tifm_file" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -102,9 +115,9 @@ main() {
 			fi
 		;;
 		e)
-			echo "Choose a file to edit (/cancel)."
+			echo "Choose a file to edit (/c(ancel))."
 			read -p "file:: " tifm_file
-			if [[ "$tifm_file" == "/cancel" ]]; then
+			if [[ "$tifm_file" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -112,14 +125,14 @@ main() {
 			fi
 		;;
 		c)
-			echo "Choose the file and the location you would like to copy it to (/cancel)."
+			echo "Choose the file and the location you would like to copy it to (/c(ancel))."
 			read -p "from:: " tifm_file_from
-			if [[ "$tifm_file_from" == "/cancel" ]]; then
+			if [[ "$tifm_file_from" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			fi
 			read -p "to:: " tifm_file_to
-			if [[ "$tifm_file_to" == "/cancel" ]]; then
+			if [[ "$tifm_file_to" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			fi
@@ -128,21 +141,21 @@ main() {
 		m)
 			echo "Choose the file and the new location you would like to move it to."
 			read -p "from:: " tifm_file_from
-			if [[ "$tifm_file_from" == "/cancel" ]]; then
+			if [[ "$tifm_file_from" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			fi
 			read -p "to:: " tifm_file_to
-			if [[ "$tifm_file_to" == "/cancel" ]]; then
+			if [[ "$tifm_file_to" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			fi
 			mv "$tifm_file_from" "$tifm_file_to"
 		;;
 		i)
-			echo "Choose the directory to inspect (/cancel)."
+			echo "Choose the directory to inspect (/c(ancel))."
 			read -p "dir:: " tifm_dir
-			if [[ "$tifm_dir" == "/cancel" ]]; then
+			if [[ "$tifm_dir" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -154,18 +167,18 @@ main() {
 			echo ""
 			case "$tifm_type" in
 				d)
-					echo "Choose the directory you would like to create (/cancel)."
+					echo "Choose the directory you would like to create (/c(ancel))."
 					read -p "name:: " tifm_dir_name
-					if [[ "$tifm_dir_name" == "/cancel" ]]; then
+					if [[ "$tifm_dir_name" == "/c" ]]; then
 						echo "Cancelled."
 						return
 					fi
 					mkdir "$tifm_dir_name"
 				;;
 				f)
-					echo "Choose the file you would like to create (/cancel)."
+					echo "Choose the file you would like to create (/c(ancel))."
 					read -p "name:: " tifm_file_name
-					if [[ "$tifm_file_name" == "/cancel" ]]; then
+					if [[ "$tifm_file_name" == "/c" ]]; then
 						echo "Cancelled."
 						return
 					fi
@@ -181,18 +194,18 @@ main() {
 			echo ""
 			case "$tifm_type" in
 				d)
-					echo "Choose the directory you would like to remove (/cancel)."
+					echo "Choose the directory you would like to remove (/c(ancel))."
 					read -p "name:: " tifm_dir_name
-					if [[ "$tifm_dir_name" == "/cancel" ]]; then
+					if [[ "$tifm_dir_name" == "/c" ]]; then
 						echo "Cancelled."
 						return
 					fi
 					rm -rf "$tifm_dir_name"
 				;;
 				f)
-					echo "Choose the file you would like to remove (/cancel)."
+					echo "Choose the file you would like to remove (/c(ancel))."
 					read -p "name:: " tifm_file_name
-					if [[ "$tifm_file_name" == "/cancel" ]]; then
+					if [[ "$tifm_file_name" == "/c" ]]; then
 						echo "Cancelled."
 						return
 					fi
@@ -204,15 +217,15 @@ main() {
 			esac
 		;;
 		P)
-			echo "Choose a file or folder to change the permission (/cancel)."
+			echo "Choose a file or folder to change the permission (/c(ancel))."
 			read -p "item:: " tifm_select
-			if [[ "$tifm_select" == "/cancel" ]]; then
+			if [[ "$tifm_select" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			fi
-			echo "Choose the arguments from 'chmod' to set as permission for the file or folder (/cancel). (Read the manual for chmod for more info)"
+			echo "Choose the arguments from 'chmod' to set as permission for the file or folder (/c(ancel)). (Read the manual for chmod for more info)"
 			read -p "perm:: " tifm_perm
-			if [[ "$tifm_perm" == "/cancel" ]]; then
+			if [[ "$tifm_perm" == "/c" ]]; then
 				echo "Cancelled."
 				return
 			fi
@@ -235,12 +248,12 @@ p      - View file (uses 'less' by default - change in config.sh)
 e      - edit a file (uses 'nano' by default - change in config.sh)
 m      - Moves/Renames a file
 c      - Copies a file to a location
-i      - Shows the list of files inside the directory (with detail)
+i      - Inspects a directory (ls -l) and pipes it to the selected pager ('less' by default - change in config.sh)
 n(f/d) - Creates a folder or file
 r(f/d) - Removes a folder or file
 P      - Sets permissions for a specific file or folder
 t      - Switches to command line mode, run 'exit' to exit.
-;	   - Open config file
+;      - Open config file
 Q      - Quits the program"
 		;;
 		Q)

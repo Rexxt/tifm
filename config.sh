@@ -13,7 +13,14 @@ __TIFM_DISPLAY() {
     else
         stat="${RED}× $STATUS$NORMAL"
     fi
-    echo "$GREEN$BRIGHT$PWD$NORMAL $stat"
+    local string="$GREEN$BRIGHT$PWD$NORMAL $stat "
+    # for each extension, if it has a display function, call it
+    for ext_name in "${tifm_extensions[@]}"; do
+        if type "$ext_name".display &> /dev/null; then
+            string="$string$( "$ext_name".display )$NORMAL "
+        fi
+    done
+    echo "$string"
 }
 __TIFM_LS_COLOUR="$BLUE"
 __TIFM_PROMPT() {
