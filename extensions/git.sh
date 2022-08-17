@@ -77,9 +77,24 @@ git_commit() {
     read -p "Commit message: " message
     git commit -m "$message"
 }
+git_diff() {
+    # show diff between current and previous commit
+    git diff
+}
+git_log() {
+    # show log of all commits
+    git log
+}
+git_log_last() {
+    # show log of last commit
+    git log -1
+}
 tifmx.add_long G # for global git commands
 tifmx.bind_sub G p git_pull
 tifmx.bind_sub G P git_push
 tifmx.bind_sub G s git_status
 tifmx.bind_sub G a git_add
 tifmx.bind_sub G c git_commit
+tifmx.bind_sub G d git_diff
+tifmx.bind_sub G l git_log
+tifmx.bind_sub G L git_log_last
