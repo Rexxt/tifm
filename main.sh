@@ -86,10 +86,10 @@ main() {
 				return
 			else
 				cd $tifm_dir
-				# for ever extension, if it has a function called name.nav, call it
+				# for every extension, if it has a function called name.nav, call it
 				for ext_name in "${tifm_extensions[@]}"; do
 					if type "$ext_name".nav &> /dev/null; then
-						"$ext_name".nav
+						"$ext_name".nav "$tifm_dir"
 					fi
 				done
 			fi
@@ -123,6 +123,12 @@ main() {
 			else
 				$__TIFM_EDITOR $tifm_file
 			fi
+			# for every extension, if it has a function called name.edit, call it
+			for ext_name in "${tifm_extensions[@]}"; do
+				if type "$ext_name".edit &> /dev/null; then
+					"$ext_name".edit "$tifm_file"
+				fi
+			done
 		;;
 		c)
 			echo "Choose the file and the location you would like to copy it to (/c(ancel))."
@@ -137,6 +143,12 @@ main() {
 				return
 			fi
 			cp "$tifm_file_from" "$tifm_file_to"
+			# for every extension, if it has a function called name.copy, call it
+			for ext_name in "${tifm_extensions[@]}"; do
+				if type "$ext_name".copy &> /dev/null; then
+					"$ext_name".copy "$tifm_file_from" "$tifm_file_to"
+				fi
+			done
 		;;
 		m)
 			echo "Choose the file and the new location you would like to move it to."
@@ -151,6 +163,12 @@ main() {
 				return
 			fi
 			mv "$tifm_file_from" "$tifm_file_to"
+			# for every extension, if it has a function called name.move, call it
+			for ext_name in "${tifm_extensions[@]}"; do
+				if type "$ext_name".move &> /dev/null; then
+					"$ext_name".move "$tifm_file_from" "$tifm_file_to"
+				fi
+			done
 		;;
 		i)
 			echo "Choose the directory to inspect (/c(ancel))."
@@ -159,7 +177,7 @@ main() {
 				echo "Cancelled."
 				return
 			else
-				ls -l $tifm_dir
+				ls -l $tifm_dir | $__TIFM_PAGER
 			fi
 		;;
 		n)
@@ -174,6 +192,12 @@ main() {
 						return
 					fi
 					mkdir "$tifm_dir_name"
+					# for every extension, if it has a function called name.mkdir, call it
+					for ext_name in "${tifm_extensions[@]}"; do
+						if type "$ext_name".mkdir &> /dev/null; then
+							"$ext_name".mkdir "$tifm_dir_name"
+						fi
+					done
 				;;
 				f)
 					echo "Choose the file you would like to create (/c(ancel))."
@@ -183,6 +207,12 @@ main() {
 						return
 					fi
 					touch "$tifm_file_name"
+					# for every extension, if it has a function called name.mkfile, call it
+					for ext_name in "${tifm_extensions[@]}"; do
+						if type "$ext_name".mkfile &> /dev/null; then
+							"$ext_name".mkfile "$tifm_file_name"
+						fi
+					done
 				;;
 				*)
 					echo "Invalid type ([d]irectory/[f]ile)."
@@ -201,6 +231,12 @@ main() {
 						return
 					fi
 					rm -rf "$tifm_dir_name"
+					# for every extension, if it has a function called name.rmdir, call it
+					for ext_name in "${tifm_extensions[@]}"; do
+						if type "$ext_name".rmdir &> /dev/null; then
+							"$ext_name".rmdir "$tifm_dir_name"
+						fi
+					done
 				;;
 				f)
 					echo "Choose the file you would like to remove (/c(ancel))."
@@ -210,6 +246,12 @@ main() {
 						return
 					fi
 					rm "$tifm_file_name"
+					# for every extension, if it has a function called name.rmfile, call it
+					for ext_name in "${tifm_extensions[@]}"; do
+						if type "$ext_name".rmfile &> /dev/null; then
+							"$ext_name".rmfile "$tifm_file_name"
+						fi
+					done
 				;;
 				*)
 					echo "Invalid type ([d]irectory/[f]ile)."
@@ -230,6 +272,12 @@ main() {
 				return
 			fi
 			chmod $tifm_perm $tifm_select
+			# for every extension, if it has a function called name.fperms, call it
+			for ext_name in "${tifm_extensions[@]}"; do
+				if type "$ext_name".fperms &> /dev/null; then
+					"$ext_name".fperms "$tifm_select" "$tifm_perm"
+				fi
+			done
 		;;
 		t)
 			/bin/bash
