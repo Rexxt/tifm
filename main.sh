@@ -1,6 +1,7 @@
 #!/bin/env bash
+declare -a -x tifm_extensions
 declare -A -x tifm_extensions_commands
-declare -a -x tifm_extensions_longcommands=()
+declare -a -x tifm_extensions_longcommands
 declare -A -x tifm_extensions_subcommands
 tifmx.bind() {
 	tifm_extensions_commands["$1"]="$2"
@@ -12,7 +13,7 @@ tifmx.bind_sub() {
 	tifm_extensions_subcommands["$1$2"]="$3"
 }
 # consts
-__TIFM_VERSION="0.1.1"
+__TIFM_VERSION="0.2.0"
 BLACK=$(tput setaf 0)
 RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
@@ -28,6 +29,7 @@ NORMAL=$(tput sgr0)
 BLINK=$(tput blink)
 REVERSE=$(tput smso)
 UNDERLINE=$(tput smul)
+DIM=$(tput dim)
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 init() {
@@ -48,6 +50,8 @@ load_extensions() {
 	local files=$(ls -1 "$SCRIPT_DIR/extensions" | wc -l)
 	for extension in "$SCRIPT_DIR/extensions/"*; do
 		source "$extension"
+		# add only the name of the extension to the array (ex: extensions/git.sh -> git)
+		tifm_extensions+=("$(basename "$extension")")
 		count=$((count + 1))
 		# percentage of completion
 		local percent=$((count / files * 100))
@@ -217,6 +221,12 @@ main() {
 		t)
 			/bin/bash
 		;;
+		";")
+			# open config
+			$__TIFM_EDITOR "$SCRIPT_DIR/config.sh"
+			# reload config
+			source "$SCRIPT_DIR/config.sh"
+		;;
 		"?")
 			echo "${LIME_YELLOW}List of commands:$NORMAL
 N      - Goes to a folder
@@ -230,6 +240,7 @@ n(f/d) - Creates a folder or file
 r(f/d) - Removes a folder or file
 P      - Sets permissions for a specific file or folder
 t      - Switches to command line mode, run 'exit' to exit.
+;	   - Open config file
 Q      - Quits the program"
 		;;
 		Q)
@@ -259,9 +270,11 @@ Q      - Quits the program"
 (
 	clear
 	init
-	echo "$__TIFM_DECO_COLOUR$__ANGLE_UP_RIGHT$NORMAL tifm $__TIFM_VERSION
-$__TIFM_DECO_COLOUR$__VBAR$NORMAL github.com/Rexxt/tifm
-$__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT$NORMAL Strike '?' for help"
+	echo "$__TIFM_DECO_COLOUR$__ANGLE_UP_RIGHT$GREEN tifm $__TIFM_VERSION$NORMAL
+$__TIFM_DECO_COLOUR$__VBAR$NORMAL $BLUE${UNDERLINE}https://github.com/Rexxt/tifm$NORMAL
+$__TIFM_DECO_COLOUR$__VBAR$NORMAL $RED$REVERSE/!\\ you are running a bleeding edge version of tifm. $NORMAL
+$__TIFM_DECO_COLOUR$__VBAR$NORMAL $RED$REVERSE    if you encounter any bugs, report them on github.$NORMAL
+$__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT$NORMAL strike '?' for help"
 	echo ""
 	while true; do
 		main
