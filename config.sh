@@ -9,9 +9,9 @@ __TIFM_DECO_COLOUR="$CYAN"
 __TIFM_DISPLAY() {
     local stat=""
     if [ "$STATUS" == "0" ]; then
-        stat="${GREEN}✓$NORMAL"
+        stat="${GREEN}✔$NORMAL"
     else
-        stat="${RED}× $STATUS$NORMAL"
+        stat="${RED}✘ $STATUS$NORMAL"
     fi
     local string="$GREEN$BRIGHT$PWD$NORMAL $stat "
     # for each extension, if it has a display function, call it

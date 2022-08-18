@@ -49,9 +49,13 @@ load_extensions() {
 	# check how many files are in the extensions directory
 	local files=$(ls -1 "$SCRIPT_DIR/extensions" | wc -l)
 	for extension in "$SCRIPT_DIR/extensions/"*".sh"; do
+		local ext_name=$(basename "$extension" | cut -d. -f1)
+		# if the name is in the extension_ignore file, skip it
+		if grep -q "$ext_name" "$SCRIPT_DIR/extension_ignore"; then
+			continue
+		fi
 		source "$extension"
 		# add only the name of the extension to the array (ex: extensions/git.sh -> git)
-		local ext_name=$(basename "$extension" | cut -d. -f1)
 		tifm_extensions+=("$ext_name")
 		count=$((count + 1))
 		# percentage of completion
@@ -72,7 +76,7 @@ main() {
 	done < <(ls -a)
 	read -n 1 -p "$__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT $(__TIFM_PROMPT) $YELLOW" ans
 
-	if [[ "$ans" != "n" ]] && [[ "$ans" != "r" ]] && [[ ! "${tifm_extensions_longcommands[*]}" =~ "$ans" ]]; then
+	if [[ "$ans" != "n" ]] && [[ "$ans" != "r" ]] && [[ "$ans" != ";" ]] && [[ ! "${tifm_extensions_longcommands[*]}" =~ "$ans" ]]; then
 		echo ""
 	fi
 	printf "$NORMAL"
@@ -283,10 +287,68 @@ main() {
 			/bin/bash
 		;;
 		";")
-			# open config
-			$__TIFM_EDITOR "$SCRIPT_DIR/config.sh"
-			# reload config
-			source "$SCRIPT_DIR/config.sh"
+			read -n 1 tifm_sub
+			echo ""
+			case "$tifm_sub" in
+				c)
+					# open config
+					$__TIFM_EDITOR "$SCRIPT_DIR/config.sh"
+					# reload config
+					source "$SCRIPT_DIR/config.sh"
+				;;
+				e)
+					# open extension menu
+					local all_extensions=()
+					for extension in "$SCRIPT_DIR/extensions/"*".sh"; do
+						local ext_name=$(basename "$extension" .sh)
+						# if the extension name is in the extension_ignore file, ignore it
+						all_extensions+=("$ext_name")
+					done
+					display_extensions() {
+						clear
+						# display all extensions
+						echo "Extensions:"
+						for extension in "${all_extensions[@]}"; do
+							# if not in the ignored extensions list, display with a green checkmark
+							local grepped=$(grep "$extension" "$SCRIPT_DIR/extension_ignore")
+							if [[ -z "$grepped" ]]; then
+								echo -e "    $GREEN✔$NORMAL $extension"
+							else
+								echo -e "    $RED✘$NORMAL $extension"
+							fi
+						done
+					}
+					local executing=true
+					while $executing; do
+						display_extensions
+						echo ""
+						echo "type the name of an extension to toggle it, or type 'q' to quit."
+						read -p "extension:: " tifm_extension
+						if [[ "$tifm_extension" == "q" ]]; then
+							executing=false
+							continue
+						fi
+						# if the extension is ignored, unignore it
+						if [[ -n $(grep "$tifm_extension" "$SCRIPT_DIR/extension_ignore") ]]; then
+							sed -i "/$tifm_extension/d" "$SCRIPT_DIR/extension_ignore"
+							# remove from the ignored extensions list
+							local index=0
+							for ext in "${ignored_extensions[@]}"; do
+								if [[ "$ext" == "$tifm_extension" ]]; then
+									unset ignored_extensions[$index]
+								fi
+								((index++))
+							done
+						else
+							# if the extension is not ignored, ignore it
+							echo "$tifm_extension" >> "$SCRIPT_DIR/extension_ignore"
+						fi
+					done
+				;;
+				*)
+					echo "Invalid subcommand."
+				;;
+			esac
 		;;
 		"?")
 			echo "${LIME_YELLOW}List of commands:$NORMAL
@@ -301,7 +363,7 @@ n(f/d) - Creates a file or directory
 r(f/d) - Removes a file or directory
 P      - Sets permissions for a specific file or folder
 t      - Switches to command line mode, run 'exit' to exit.
-;      - Open config file
+;(c/e) - Open [c]onfig file, [e]xtension menu
 Q      - Quits the program"
 		;;
 		Q)
