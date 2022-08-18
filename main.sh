@@ -382,6 +382,9 @@ Q      - Quits the program"
 			clear
 			exit
 		;;
+		"")
+			# do nothing
+		;;
 		*)
 			if [[ ! -z "${tifm_extensions_commands[$ans]}" ]]; then
 				eval "${tifm_extensions_commands[$ans]}"
