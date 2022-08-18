@@ -29,8 +29,12 @@ git.display() {
         gstatus=$(echo "$gstatus" | sed 's/^ *//g;s/ *$//g')
         # remove leading and trailing newlines
         gstatus=$(echo "$gstatus" | sed 's/^\n//g;s/\n$//g')
-        # replace with count
-        gstatus=$(echo "$gstatus" | wc -l)
+        if [[ -z "$gstatus" ]]; then
+            gstatus=0
+        else
+            # replace with count
+            gstatus=$(echo "$gstatus" | wc -l)
+        fi
         local modif="modif"
         # if modif > 1, replace with "modifs"
         if [[ "$gstatus" -gt 1 ]]; then
