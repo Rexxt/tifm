@@ -48,7 +48,7 @@ load_extensions() {
 	local count=0
 	# check how many files are in the extensions directory
 	local files=$(ls -1 "$SCRIPT_DIR/extensions" | wc -l)
-	for extension in "$SCRIPT_DIR/extensions/"*.sh; do
+	for extension in "$SCRIPT_DIR/extensions/"*".sh"; do
 		source "$extension"
 		# add only the name of the extension to the array (ex: extensions/git.sh -> git)
 		local ext_name=$(basename "$extension" | cut -d. -f1)
