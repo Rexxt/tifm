@@ -297,8 +297,8 @@ e      - edit a file (uses 'nano' by default - change in config.sh)
 m      - Moves/Renames a file
 c      - Copies a file to a location
 i      - Inspects a directory (ls -l) and pipes it to the selected pager ('less' by default - change in config.sh)
-n(f/d) - Creates a folder or file
-r(f/d) - Removes a folder or file
+n(f/d) - Creates a file or directory
+r(f/d) - Removes a file or directory
 P      - Sets permissions for a specific file or folder
 t      - Switches to command line mode, run 'exit' to exit.
 ;      - Open config file
