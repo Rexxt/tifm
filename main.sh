@@ -55,6 +55,10 @@ load_extensions() {
 	# check how many files are in the extensions directory
 	local files=$(ls -1 "$SCRIPT_DIR/extensions" | wc -l)
 	for extension in "$SCRIPT_DIR/extensions/"*".sh"; do
+		# if there is no save folder, create it
+		if [ ! -d "$SCRIPT_DIR/save" ]; then
+			mkdir "$SCRIPT_DIR/save"
+		fi
 		local ext_name=$(basename "$extension" | cut -d. -f1)
 		# if the name is in the extension_ignore file, skip it
 		if grep -q "$ext_name" "$SCRIPT_DIR/extension_ignore"; then
