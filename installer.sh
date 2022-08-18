@@ -8,10 +8,10 @@ if ! type git &> /dev/null; then
     exit 1
 fi
 # make sure we're in sudo
-# if [ "$EUID" -ne 0 ]; then
-#     echo "please run as root"
-#     exit 1
-# fi
+if [ "$EUID" -ne 0 ]; then
+    echo "please run as root"
+    exit 1
+fi
 
 git clone "https://github.com/Rexxt/tifm.git"
 rm tifm/installer.sh
