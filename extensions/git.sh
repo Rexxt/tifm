@@ -31,7 +31,12 @@ git.display() {
         gstatus=$(echo "$gstatus" | sed 's/^\n//g;s/\n$//g')
         # replace with count
         gstatus=$(echo "$gstatus" | wc -l)
-        echo "$BRIGHT$YELLOW(git branch $branch - status: $gstatus modif(s))$NORMAL"
+        local modif="modif"
+        # if modif > 1, replace with "modifs"
+        if [[ "$gstatus" -gt 1 ]]; then
+            modif="modifs"
+        fi
+        echo "$BRIGHT$YELLOW(git branch $branch - status: $gstatus $modif)$NORMAL"
     fi
 }
 
