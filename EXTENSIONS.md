@@ -111,10 +111,24 @@ tifmx.bind_sub g w greet_world
 you can now reload and test your long command out!
 
 ## documentation
+extensions have access to everything defined in the configuration file and pretty much every aspect of tifm.
 ### events
+events are functions defined in your extension that get called when a specific action happens inside of tifm. you define them this way: `extension.event` where extension is the name of your extension file (without `.sh`) and `event` is the name of your event. see below for all available events.
 > **Note:** parameters are passed without name and are accessible via `$1`, `$2` and so on, or `"${@[n]}"` where `n` is a number.
 #### `extension.init()`
 called when your extension is loaded.
+
+#### `extension.display()` (provided you're using the default `__TIFM_DISPLAY` in `config.sh`)
+called when the display (top part of the command input) is displayed. whatever it echoes last will be added as a widget in the display.
+
+example: quick clock extension:
+```sh
+# file: extensions/clock.sh
+clock.display() {
+    # display clock
+    echo -e "$CYAN$(date +"%H:%M")$NORMAL"
+}
+```
 
 #### `extension.nav(directory)`
 called when the user changes directories, at the very end of the `N` command.
@@ -166,3 +180,33 @@ called when the user changes the permissions of a file, at the very end of the `
 parameters:
 * `item`: the file or directory for which the permissions were modified
 * `permissions`: the permission arguments given to the file (in chmod format)
+
+### functions
+you have access to multiple functions that change the behaviour of tifm.
+#### `tifmx.bind(char, func)`
+tells tifm to listen to when `char` is pressed, and in that case call `func`.
+example:
+```sh
+go_home() { # navigate to the home directory
+    cd ~
+}
+tifmx.bind "~" go_home
+```
+
+#### `tifmx.add_long(char)`
+tells tifm to listen to when `char` is pressed, and in that case wait for another keypress and find a command associated to that combination. must be used with `tifmx.bind_sub(char1, char2, func)`.
+
+#### `tifmx.bind_sub(char1, char2, func)`
+tells tifmx to associate the combination `char1 + char2` to call `func`.
+example:
+```sh
+go_home() {
+    cd ~
+}
+go_parent() {
+    cd ..
+}
+tifmx.add_long "~"
+tifmx.bind_sub "~" "~" go_home # pressing ~ then ~ will return home
+tifmx.bind_sub "~" "<" go_parent # pressing ~ then < will return to the parent directory
+```
