@@ -26,13 +26,15 @@ case "$reply" in
     1)
         echo "installing to /usr/local/bin"
         touch /usr/local/bin/tifm
-        echo "chmod +x ~/tifm/main.sh; ~/tifm/main.sh" > /usr/local/bin/tifm
+        echo "~/tifm/main.sh" > /usr/local/bin/tifm
+        chmod +x ~/tifm/main.sh
         chmod +x /usr/local/bin/tifm
     ;;
     2)
         echo "installing to /usr/bin"
         touch /usr/bin/tifm
-        echo "chmod +x ~/tifm/main.sh; ~/tifm/main.sh" > /usr/bin/tifm
+        echo "~/tifm/main.sh" > /usr/bin/tifm
+        chmod +x ~/tifm/main.sh
         chmod +x /usr/bin/tifm
     ;;
     *)
