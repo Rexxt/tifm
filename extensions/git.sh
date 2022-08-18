@@ -25,13 +25,13 @@ git.display() {
     if $__tifmgit_in_repo; then
         local branch=$(git rev-parse --abbrev-ref HEAD)
         local gstatus=$(git status --porcelain)
-        # replace newlines with ,
-        gstatus=$(echo "$gstatus" | tr '\n' ',')
         # remove leading and trailing spaces
         gstatus=$(echo "$gstatus" | sed 's/^ *//g;s/ *$//g')
-        # remove trailing ,
-        gstatus=$(echo "$gstatus" | sed 's/,$//g')
-        echo "$BRIGHT$YELLOW(git branch $branch - status: $gstatus)$NORMAL"
+        # remove leading and trailing newlines
+        gstatus=$(echo "$gstatus" | sed 's/^\n//g;s/\n$//g')
+        # replace with count
+        gstatus=$(echo "$gstatus" | wc -l)
+        echo "$BRIGHT$YELLOW(git branch $branch - status: $gstatus modif(s))$NORMAL"
     fi
 }
 
@@ -65,6 +65,10 @@ git_status() {
         gstatus=$(echo "$gstatus" | sed "s/ ? /${MAGENTA}?${NORMAL} /g")
         # ! file -> ${CYAN}!${NORMAL}file
         gstatus=$(echo "$gstatus" | sed "s/ ! /${CYAN}!${NORMAL} /g")
+        # if gstatus is empty, replace it with "nothing to commit"
+        if [ -z "$gstatus" ]; then
+            gstatus="nothing to commit"
+        fi
         echo -e "$BRIGHT${YELLOW}git branch $branch$NORMAL\n$gstatus"
     fi
 }
