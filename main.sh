@@ -371,10 +371,12 @@ P      - Sets permissions for a specific file or folder
 t      - Switches to command line mode, run 'exit' to exit.
 ;(c/e) - Open [c]onfig file, [e]xtension menu
 Q      - Quits the program"
-		echo "${LIME_YELLOW}List of commands defined by extensions [${tifm_extensions[@]}]:$NORMAL"
-		for cmd in "${tifm_extensions_commands_list[@]}"; do
-			echo "$cmd - ${tifm_extensions_commands_help[$cmd]}"
-		done
+		if [[ ! -z "${tifm_extensions[@]}" ]]; then
+			echo "${LIME_YELLOW}List of commands defined by extensions [${tifm_extensions[@]}]:$NORMAL"
+			for cmd in "${tifm_extensions_commands_list[@]}"; do
+				echo "$cmd - ${tifm_extensions_commands_help[$cmd]}"
+			done
+		fi
 		;;
 		Q)
 			clear
