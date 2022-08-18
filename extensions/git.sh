@@ -104,6 +104,9 @@ git_full() { # pull, add, commit, push
     git_commit
     git_push
 }
+git_view_remote() {
+    git remote -v
+}
 tifmx.add_long G # for global git commands
 tifmx.bind_sub G p git_pull
 tifmx.bind_sub G P git_push
@@ -114,3 +117,4 @@ tifmx.bind_sub G d git_diff
 tifmx.bind_sub G l git_log
 tifmx.bind_sub G L git_log_last
 tifmx.bind_sub G "*" git_full
+tifmx.bind_sub G r git_view_remote
