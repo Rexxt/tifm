@@ -122,3 +122,4 @@ tifmx.bind_sub G l git_log
 tifmx.bind_sub G L git_log_last
 tifmx.bind_sub G "*" git_full
 tifmx.bind_sub G r git_view_remote
+tifmx.add_help G "git commands integration ([p]ull, [P]ush, [s]tatus, [a]dd, [c]ommit, [d]iff, [l]og, [L]og last, [*]full, [r]emote)"

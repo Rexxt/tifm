@@ -1,6 +1,8 @@
 #!/bin/env bash
 declare -a -x tifm_extensions
 declare -A -x tifm_extensions_commands
+declare -a -x tifm_extensions_commands_list
+declare -A -x tifm_extensions_commands_help
 declare -a -x tifm_extensions_longcommands
 declare -A -x tifm_extensions_subcommands
 tifmx.bind() {
@@ -11,6 +13,10 @@ tifmx.add_long() {
 }
 tifmx.bind_sub() {
 	tifm_extensions_subcommands["$1$2"]="$3"
+}
+tifmx.add_help() {
+	tifm_extensions_commands_list+=("$1")
+	tifm_extensions_commands_help["$1"]="$2"
 }
 # consts
 __TIFM_VERSION="0.2.0"
@@ -351,7 +357,7 @@ main() {
 			esac
 		;;
 		"?")
-			echo "${LIME_YELLOW}List of commands:$NORMAL
+			echo "${LIME_YELLOW}List of native commands:$NORMAL
 N      - Goes to a folder
 o      - Opens a file
 p      - View file (uses 'less' by default - change in config.sh)
@@ -365,6 +371,10 @@ P      - Sets permissions for a specific file or folder
 t      - Switches to command line mode, run 'exit' to exit.
 ;(c/e) - Open [c]onfig file, [e]xtension menu
 Q      - Quits the program"
+		echo "${LIME_YELLOW}List of commands defined by extensions [${tifm_extensions[@]}]:$NORMAL"
+		for cmd in "${tifm_extensions_commands_list[@]}"; do
+			echo "$cmd - ${tifm_extensions_commands_help[$cmd]}"
+		done
 		;;
 		Q)
 			clear
