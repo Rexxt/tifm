@@ -210,3 +210,16 @@ tifmx.add_long "~"
 tifmx.bind_sub "~" "~" go_home # pressing ~ then ~ will return home
 tifmx.bind_sub "~" "<" go_parent # pressing ~ then < will return to the parent directory
 ```
+
+#### `tifmx.add_help(char, helpstring)`
+adds a custom line in the `?` command to show the usage of your custom command.
+example:
+```sh
+go_home() {
+    cd ~
+}
+tifmx.bind "~" go_home
+tifmx.add_help "~" "return to the parent directory"
+# will show like this:
+# ~ - return to the parent directory
+```

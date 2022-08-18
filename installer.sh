@@ -1,6 +1,6 @@
 #!/bin/bash
 # TIFM installer script
-# run by using {curl -sL https://raw.githubusercontent.com/Rexxt/tifm/master/installer.sh | bash}
+# run by using {sudo curl -sL https://raw.githubusercontent.com/Rexxt/tifm/master/installer.sh | bash}
 
 # make sure git is installed
 if ! type git &> /dev/null; then
