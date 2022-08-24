@@ -24,5 +24,6 @@ __TIFM_DISPLAY() {
 }
 __TIFM_LS_COLOUR="$BLUE"
 __TIFM_PROMPT() {
-    echo "$CYAN$USERNAME>"
+    user=$(whoami)
+    echo "$CYAN$user>"
 }
