@@ -111,7 +111,12 @@ git_full() { # pull, add, commit, push
 git_view_remote() {
     git remote -v
 }
+git_clone() {
+    read -p "Git URL: " url
+    git clone "$url"
+}
 tifmx.add_long G # for global git commands
+tifmx.bind_sub G C git_clone
 tifmx.bind_sub G p git_pull
 tifmx.bind_sub G P git_push
 tifmx.bind_sub G s git_status
@@ -122,4 +127,4 @@ tifmx.bind_sub G l git_log
 tifmx.bind_sub G L git_log_last
 tifmx.bind_sub G "*" git_full
 tifmx.bind_sub G r git_view_remote
-tifmx.add_help G "git commands integration ([p]ull, [P]ush, [s]tatus, [a]dd, [c]ommit, [d]iff, [l]og, [L]og last, [*]full, [r]emote)"
+tifmx.add_help G "git commands integration ([C]lone, [p]ull, [P]ush, [s]tatus, [a]dd, [c]ommit, [d]iff, [l]og, [L]og last, [*]full, [r]emote)"
