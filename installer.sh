@@ -7,11 +7,6 @@ if ! type git &> /dev/null; then
     echo "git is not installed"
     exit 1
 fi
-# make sure we're in sudo
-if [ "$EUID" -ne 0 ]; then
-    echo "please run as root"
-    exit 1
-fi
 
 git clone "https://github.com/Rexxt/tifm.git"
 rm tifm/installer.sh
@@ -25,17 +20,17 @@ echo
 case "$reply" in
     1)
         echo "installing to /usr/local/bin"
-        touch /usr/local/bin/tifm
+        sudo touch /usr/local/bin/tifm
         echo "~/tifm/main.sh" > /usr/local/bin/tifm
-        chmod +x ~/tifm/main.sh
-        chmod +x /usr/local/bin/tifm
+        sudo chmod +x ~/tifm/main.sh
+        sudo chmod +x /usr/local/bin/tifm
     ;;
     2)
         echo "installing to /usr/bin"
-        touch /usr/bin/tifm
+        sudo touch /usr/bin/tifm
         echo "~/tifm/main.sh" > /usr/bin/tifm
-        chmod +x ~/tifm/main.sh
-        chmod +x /usr/bin/tifm
+        sudo chmod +x ~/tifm/main.sh
+        sudo chmod +x /usr/bin/tifm
     ;;
     *)
         echo "invalid option"
