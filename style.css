@@ -1,0 +1,13 @@
+* {
+    transition: background 250ms in_out_cubic, color 250ms in_out_cubic;
+}
+
+Navbar {
+    layout: horizontal;
+    margin: 1;
+    dock: top;
+}
+
+Path {
+    content-align: center middle;
+}
