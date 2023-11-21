@@ -19,7 +19,7 @@ tifmx.add_help() {
 	tifm_extensions_commands_help["$1"]="$2"
 }
 # consts
-__TIFM_VERSION="0.2.0"
+__TIFM_VERSION="0.2.1"
 BLACK=$(tput setaf 0)
 RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
@@ -82,7 +82,15 @@ load_extensions() {
 main() {
 	echo "$__TIFM_DECO_COLOUR$__ANGLE_UP_RIGHT $(__TIFM_DISPLAY)$NORMAL"
 	while read file; do
-		echo "$__TIFM_DECO_COLOUR$__VBAR $__TIFM_LS_COLOUR$file$NORMAL"
+		__color="$__TIFM_LS_COLOUR_FILE"
+		__post=""
+		__icon="🗎"
+		if [ -d "$file" ]; then
+			__color="$__TIFM_LS_COLOUR_DIRECTORY"
+			__post="/"
+			__icon="␣"
+		fi
+		echo "$__TIFM_DECO_COLOUR$__VBAR$__color $__icon $file$__post$NORMAL"
 	done < <(ls -a)
 	read -n 1 -p "$__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT $(__TIFM_PROMPT) $YELLOW" ans
 
@@ -91,11 +99,12 @@ main() {
 	fi
 	printf "$NORMAL"
 
+	# command execution
 	case "$ans" in
 		N)
-			echo "Select a directory to go to (/c(ancel))."
+			echo "Select a directory to go to (leave blank to cancel)."
 			read -p "nav:: " tifm_dir
-			if [[ "$tifm_dir" == "/c" ]]; then
+			if [[ "$tifm_dir" == "" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -109,9 +118,9 @@ main() {
 			fi
 		;;
 		o)
-			echo "Choose a file to open (/c(ancel))."
+			echo "Choose a file to open (leave blank to cancel)."
 			read -p "file:: " tifm_file
-			if [[ "$tifm_file" == "/c" ]]; then
+			if [[ "$tifm_file" == "" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -119,9 +128,9 @@ main() {
 			fi
 		;;
 		p)
-			echo "Choose a file to view (/c(ancel))."
+			echo "Choose a file to view (leave blank to cancel)."
 			read -p "file:: " tifm_file
-			if [[ "$tifm_file" == "/c" ]]; then
+			if [[ "$tifm_file" == "" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -129,9 +138,9 @@ main() {
 			fi
 		;;
 		e)
-			echo "Choose a file to edit (/c(ancel))."
+			echo "Choose a file to edit (leave blank to cancel)."
 			read -p "file:: " tifm_file
-			if [[ "$tifm_file" == "/c" ]]; then
+			if [[ "$tifm_file" == "" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -145,14 +154,14 @@ main() {
 			done
 		;;
 		c)
-			echo "Choose the file and the location you would like to copy it to (/c(ancel))."
+			echo "Choose the file and the location you would like to copy it to (leave blank to cancel)."
 			read -p "from:: " tifm_file_from
-			if [[ "$tifm_file_from" == "/c" ]]; then
+			if [[ "$tifm_file_from" == "" ]]; then
 				echo "Cancelled."
 				return
 			fi
 			read -p "to:: " tifm_file_to
-			if [[ "$tifm_file_to" == "/c" ]]; then
+			if [[ "$tifm_file_to" == "" ]]; then
 				echo "Cancelled."
 				return
 			fi
@@ -167,12 +176,12 @@ main() {
 		m)
 			echo "Choose the file and the new location you would like to move it to."
 			read -p "from:: " tifm_file_from
-			if [[ "$tifm_file_from" == "/c" ]]; then
+			if [[ "$tifm_file_from" == "" ]]; then
 				echo "Cancelled."
 				return
 			fi
 			read -p "to:: " tifm_file_to
-			if [[ "$tifm_file_to" == "/c" ]]; then
+			if [[ "$tifm_file_to" == "" ]]; then
 				echo "Cancelled."
 				return
 			fi
@@ -185,9 +194,9 @@ main() {
 			done
 		;;
 		i)
-			echo "Choose the directory to inspect (/c(ancel))."
+			echo "Choose the directory to inspect (leave blank to cancel)."
 			read -p "dir:: " tifm_dir
-			if [[ "$tifm_dir" == "/c" ]]; then
+			if [[ "$tifm_dir" == "" ]]; then
 				echo "Cancelled."
 				return
 			else
@@ -199,9 +208,9 @@ main() {
 			echo ""
 			case "$tifm_type" in
 				d)
-					echo "Choose the directory you would like to create (/c(ancel))."
+					echo "Choose the directory you would like to create (leave blank to cancel)."
 					read -p "name:: " tifm_dir_name
-					if [[ "$tifm_dir_name" == "/c" ]]; then
+					if [[ "$tifm_dir_name" == "" ]]; then
 						echo "Cancelled."
 						return
 					fi
@@ -214,9 +223,9 @@ main() {
 					done
 				;;
 				f)
-					echo "Choose the file you would like to create (/c(ancel))."
+					echo "Choose the file you would like to create (leave blank to cancel)."
 					read -p "name:: " tifm_file_name
-					if [[ "$tifm_file_name" == "/c" ]]; then
+					if [[ "$tifm_file_name" == "" ]]; then
 						echo "Cancelled."
 						return
 					fi
@@ -238,9 +247,9 @@ main() {
 			echo ""
 			case "$tifm_type" in
 				d)
-					echo "Choose the directory you would like to remove (/c(ancel))."
+					echo "Choose the directory you would like to remove (leave blank to cancel)."
 					read -p "name:: " tifm_dir_name
-					if [[ "$tifm_dir_name" == "/c" ]]; then
+					if [[ "$tifm_dir_name" == "" ]]; then
 						echo "Cancelled."
 						return
 					fi
@@ -253,9 +262,9 @@ main() {
 					done
 				;;
 				f)
-					echo "Choose the file you would like to remove (/c(ancel))."
+					echo "Choose the file you would like to remove (leave blank to cancel)."
 					read -p "name:: " tifm_file_name
-					if [[ "$tifm_file_name" == "/c" ]]; then
+					if [[ "$tifm_file_name" == "" ]]; then
 						echo "Cancelled."
 						return
 					fi
@@ -273,15 +282,15 @@ main() {
 			esac
 		;;
 		P)
-			echo "Choose a file or folder to change the permission (/c(ancel))."
+			echo "Choose a file or folder to change the permission (leave blank to cancel)."
 			read -p "item:: " tifm_select
-			if [[ "$tifm_select" == "/c" ]]; then
+			if [[ "$tifm_select" == "" ]]; then
 				echo "Cancelled."
 				return
 			fi
-			echo "Choose the arguments from 'chmod' to set as permission for the file or folder (/c(ancel)). (Read the manual for chmod for more info)"
+			echo "Choose the arguments from 'chmod' to set as permission for the file or folder (leave blank to cancel). (Read the manual for chmod for more info)"
 			read -p "perm:: " tifm_perm
-			if [[ "$tifm_perm" == "/c" ]]; then
+			if [[ "$tifm_perm" == "" ]]; then
 				echo "Cancelled."
 				return
 			fi
@@ -406,7 +415,6 @@ Q      - Quits the program"
 		;;
 	esac
 	STATUS=$?
-	echo ""
 }
 
 (
@@ -420,5 +428,17 @@ $__TIFM_DECO_COLOUR$__ANGLE_DOWN_RIGHT$NORMAL strike '?' for help"
 	echo ""
 	while true; do
 		main
+		if "$__TIFM_CONFIRM_RETURN"; then
+			# wait for user to agree to return to the file view
+			echo
+			echo "${BRIGHT}${RED}press q to return to file view${NORMAL}"
+			key=""
+			while [ ! "$key" == "q" ]; do
+				read -n 1 key
+			done
+			clear
+		else
+			echo
+		fi
 	done
 )

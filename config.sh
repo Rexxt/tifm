@@ -6,6 +6,7 @@ __ANGLE_DOWN_RIGHT="╰"
 __ANGLE_DOWN_LEFT="╯"
 __VBAR="│"
 __TIFM_DECO_COLOUR="$CYAN"
+__TIFM_CONFIRM_RETURN=true
 __TIFM_DISPLAY() {
     local stat=""
     if [ "$STATUS" == "0" ]; then
@@ -22,7 +23,8 @@ __TIFM_DISPLAY() {
     done
     echo "$string"
 }
-__TIFM_LS_COLOUR="$BLUE"
+__TIFM_LS_COLOUR_FILE="$BLUE"
+__TIFM_LS_COLOUR_DIRECTORY="$LIME_YELLOW"
 __TIFM_PROMPT() {
     user=$(whoami)
     echo "$CYAN$user>"
